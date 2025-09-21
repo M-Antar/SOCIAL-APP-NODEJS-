@@ -1,6 +1,6 @@
 import { log } from "console"
 import { config } from "dotenv"
-config({path:"./config/dev.env"})
+config()
 import express from "express"
 import { bootstrap } from "./app.controller"
 const app = express()

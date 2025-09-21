@@ -4,7 +4,7 @@
     "main": "./dist/index.js",
     "type": "commonjs",
     "scripts": {
-        "start:dev": "concurrently \"tsc --watch\" \"node --watch .\""
+        "start:dev": "node ./node_modules/concurrently/dist/bin/concurrently.js \"node ./node_modules/typescript/bin/tsc --watch\" \"node --watch dist/index.js\""
     },
     "keywords": [],
     "author": "",
@@ -15,11 +15,13 @@
         "dotenv": "^17.2.2",
         "express": "^5.1.0",
         "mongoose": "^8.18.0",
+        "nodemailer": "^7.0.6",
         "zod": "^4.1.8"
     },
     "devDependencies": {
         "@types/express": "^5.0.3",
         "@types/node": "^24.3.1",
+        "@types/nodemailer": "^7.0.1",
         "concurrently": "^9.2.1",
         "typescript": "^5.9.2"
     }

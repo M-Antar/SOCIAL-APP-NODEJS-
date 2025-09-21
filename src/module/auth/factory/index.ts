@@ -11,12 +11,13 @@ export class AuthFactoryService {
     user.email = registerDTO.email;
     user.password = await generateHash(registerDTO.password);
     user.phoneNumber = registerDTO.phoneNumber as string; // encrypt phone number
-    user.otp = generateOTP() as unknown as Date;
+    user.otp = generateOTP() as unknown as string;
     user.otpExpiryAt = generateExpireDate(5*60*60*1000) as unknown as Date
     user.credentialUpdatedAt = Date.now() as unknown as Date
     user.gender = registerDTO.gender;
     user.role = ENUM_ROLE.user;
     user.userAgent = USER_AGENT.local;
+    user.isVerified = false;
 
     return user
   }

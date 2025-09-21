@@ -5,5 +5,6 @@ import * as authValidation from "./auth.validation"
 
 const AuthRouter = Router()
 const authService = new AuthService()
-AuthRouter.use("/register",isValid(authValidation.registerSchema ),authService.register)
+AuthRouter.post("/register",isValid(authValidation.registerSchema ),authService.register)
+AuthRouter.post("/verify-account",authService.verifyAccount)
 export default AuthRouter

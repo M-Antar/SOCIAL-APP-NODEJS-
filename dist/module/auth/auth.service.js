@@ -4,6 +4,7 @@ exports.AuthService = void 0;
 const error_1 = require("../../utils/common/enum/error");
 const user_repository_1 = require("../../DB/model/user/user.repository");
 const factory_1 = require("./factory");
+const auth_provider_1 = require("./provider/auth.provider");
 class AuthService {
     userRepository = new user_repository_1.UserRepository();
     authFactoryService = new factory_1.AuthFactoryService();
@@ -19,7 +20,16 @@ class AuthService {
         const user = await this.authFactoryService.register(registerDTO);
         //save
         const createdUser = await this.userRepository.createItem(user);
-        return res.status(201).json({ message: "User Created Successfully", success: true, data: createdUser });
+        return res.status(201).json({ message: "User Created Successfully", success: true, data: { id: createdUser.id } });
+    };
+    verifyAccount = async (req, res) => {
+        const verifyAccountDTO = req.body;
+        await auth_provider_1.authProvider.checkOTP(verifyAccountDTO);
+        await this.userRepository.update({ email: verifyAccountDTO.email }, {
+            $set: { isVerified: true },
+            $unset: { otp: "", otpExpiryAt: "" }
+        });
+        res.sendStatus(204);
     };
 }
 exports.AuthService = AuthService;

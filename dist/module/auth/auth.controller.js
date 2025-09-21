@@ -39,5 +39,6 @@ const validation_middlewear_1 = require("../../middlewear/auth/validation.middle
 const authValidation = __importStar(require("./auth.validation"));
 const AuthRouter = (0, express_1.Router)();
 const authService = new auth_service_1.AuthService();
-AuthRouter.use("/register", (0, validation_middlewear_1.isValid)(authValidation.registerSchema), authService.register);
+AuthRouter.post("/register", (0, validation_middlewear_1.isValid)(authValidation.registerSchema), authService.register);
+AuthRouter.post("/verify-account", authService.verifyAccount);
 exports.default = AuthRouter;

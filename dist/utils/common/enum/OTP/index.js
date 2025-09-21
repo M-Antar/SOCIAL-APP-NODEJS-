@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateExpireDate = exports.generateOTP = void 0;
 const generateOTP = () => {
-    return Math.floor(Math.random() * 99999 + 10000);
+    return Math.floor(100000 + Math.random() * 900000).toString();
 };
 exports.generateOTP = generateOTP;
 const generateExpireDate = (time) => {

@@ -18,6 +18,7 @@ class AuthFactoryService {
         user.gender = registerDTO.gender;
         user.role = enum_1.ENUM_ROLE.user;
         user.userAgent = enum_1.USER_AGENT.local;
+        user.isVerified = false;
         return user;
     }
 }

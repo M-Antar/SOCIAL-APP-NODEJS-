@@ -12,5 +12,6 @@ class User {
     userAgent;
     otp;
     otpExpiryAt;
+    isVerified;
 }
 exports.User = User;

@@ -9,6 +9,7 @@ export class User {
   public role!: ENUM_ROLE;
   public gender!: GENDER;
   public userAgent!: USER_AGENT;
-  public otp!: Date;
+  public otp!: string;
   public otpExpiryAt!: Date;
+  public isVerified!:boolean
 }

@@ -8,3 +8,8 @@ export interface RegisterDTO {
   phoneNumber?: string;
   gender: GENDER;
 }
+
+export interface VerifyAccountDTO{
+  email:string;
+  otp:string;
+}

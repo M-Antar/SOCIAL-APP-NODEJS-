@@ -11,6 +11,7 @@ export interface IUser {
   role: ENUM_ROLE;
   gender: GENDER;
   userAgent: USER_AGENT;
-  otp?:Date;
-  otpExpire:Date;
+  otp?:string;
+  otpExpireAt:Date;
+  isVerified:boolean
 }
