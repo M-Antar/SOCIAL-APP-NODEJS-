@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "../../DB/model/user/user.repository";
+import { PostFactoryService } from "../post/factory";
 
 export class UserService {
+
   private  userRepository = new UserRepository();
   constructor() {}
 

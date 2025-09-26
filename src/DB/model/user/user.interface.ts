@@ -1,6 +1,8 @@
+import { ObjectId, Types } from "mongoose";
 import { ENUM_ROLE, GENDER, USER_AGENT } from "../../../utils/common/enum";
 
 export interface IUser {
+  _id: Types.ObjectId;
   firstName: string;
   lastName: string;
   fullName?: string; 

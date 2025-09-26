@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer"
-import { devConfig } from "../../../../config/env/dev.config"
+
 import { MailOptions } from "nodemailer/lib/sendmail-transport"
+import { devConfig } from "../../../config/env/dev.config"
 
 
 export const sendMail= async (mailOptions:MailOptions)=>{

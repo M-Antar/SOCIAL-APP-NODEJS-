@@ -13,3 +13,9 @@ export interface VerifyAccountDTO{
   email:string;
   otp:string;
 }
+
+
+export interface LLoginDTO{
+  email:string,
+  password:string
+}

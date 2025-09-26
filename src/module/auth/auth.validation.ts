@@ -1,7 +1,7 @@
 import {email, z} from "zod"
 import { GENDER, USER_AGENT } from "../../utils/common/enum"
 import { IUser } from "../../DB/model/user/user.interface"
-import { RegisterDTO } from "./auth.DTO"
+import { LLoginDTO, RegisterDTO } from "./auth.DTO"
 
 
 export const registerSchema = z.object<RegisterDTO>({
@@ -10,4 +10,9 @@ export const registerSchema = z.object<RegisterDTO>({
     password:z.string() as unknown as string,
     phoneNumber:z.string() as unknown as string,
     gender:z.enum(GENDER) as unknown as GENDER,
+})
+
+export const loginSchema = z.object<LLoginDTO>({
+    email:z.email() as unknown as string,
+    password:z.string() as unknown as string,
 })

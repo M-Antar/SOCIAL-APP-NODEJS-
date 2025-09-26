@@ -1,8 +1,9 @@
 import {Express, Request, Response, NextFunction, ErrorRequestHandler } from "express";
-import { AuthRouter,userRouter } from "./module";
+import { AuthRouter,PostRouter,userRouter } from "./module";
 
 import { connectDB } from "./DB/connection";
-import { AppError } from "./utils/common/enum/error";
+import { AppError } from "./utils/common/error";
+
 
 
 
@@ -13,6 +14,7 @@ export function bootstrap(app:Express,express:any){
 
     app.use("/auth",AuthRouter)
     app.use("/user",userRouter)
+    app.use("/post",PostRouter)
 
     
 
@@ -27,13 +29,14 @@ const globalHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  res.status(err.statusCode).json({
+  const status = err.statusCode || 500; // default to 500
+  res.status(status).json({
     success: false,
     message: err.message || "Internal Server Error",
-    errorDetails:err.errorDetails
-    
+    errorDetails: err.errorDetails || [],
   });
 };
+
  
 app.use(globalHandler)
 connectDB() // operation buffering

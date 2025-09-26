@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isValid = void 0;
-const error_1 = require("../../utils/common/enum/error");
+const error_1 = require("../../utils/common/error");
 const isValid = (schema) => {
     return (req, res, next) => {
         const data = { ...req.body, ...req.params, ...req.query };

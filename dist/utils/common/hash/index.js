@@ -9,7 +9,7 @@ const generateHash = async (plainText) => {
     return await bcryptjs_1.default.hash(plainText, 10);
 };
 exports.generateHash = generateHash;
-const compareHash = async (password, hash) => {
-    return await bcryptjs_1.default.compare(password, hash);
+const compareHash = async (plainText, hash) => {
+    return await bcryptjs_1.default.compare(plainText, hash);
 };
 exports.compareHash = compareHash;

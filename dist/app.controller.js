@@ -7,14 +7,16 @@ function bootstrap(app, express) {
     app.use(express.json());
     app.use("/auth", module_1.AuthRouter);
     app.use("/user", module_1.userRouter);
+    app.use("/post", module_1.PostRouter);
     app.all("/{*dummy}", (req, res, next) => {
         return res.status(404).json({ message: "invalid router", success: false });
     });
     const globalHandler = (err, req, res, next) => {
-        res.status(err.statusCode).json({
+        const status = err.statusCode || 500; // default to 500
+        res.status(status).json({
             success: false,
             message: err.message || "Internal Server Error",
-            errorDetails: err.errorDetails
+            errorDetails: err.errorDetails || [],
         });
     };
     app.use(globalHandler);

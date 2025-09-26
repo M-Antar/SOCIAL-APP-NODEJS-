@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authProvider = void 0;
 const user_repository_1 = require("../../../DB/model/user/user.repository");
-const error_1 = require("../../../utils/common/enum/error");
+const error_1 = require("../../../utils/common/error");
 exports.authProvider = {
     async checkOTP(verifyAccountDTO) {
         const userRepository = new user_repository_1.UserRepository();

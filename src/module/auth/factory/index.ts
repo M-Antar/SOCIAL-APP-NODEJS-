@@ -1,8 +1,8 @@
 import { RegisterDTO } from "../auth.DTO";
 import { ENUM_ROLE, USER_AGENT } from "../../../utils/common/enum";
-import { generateHash } from "../../../utils/common/enum/hash";
-import { generateExpireDate, generateOTP } from "../../../utils/common/enum/OTP";
 import { User } from "../entity";
+import { generateHash } from "../../../utils/common/hash";
+import { generateExpireDate, generateOTP } from "../../../utils/common/OTP";
 
 export class AuthFactoryService {
   async register(registerDTO: RegisterDTO) {

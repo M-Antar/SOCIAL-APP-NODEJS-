@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from "express"
 import { ZodType } from "zod"
-import { BadRequestException } from "../../utils/common/enum/error"
+import { BadRequestException } from "../../utils/common/error"
+
+
 
 export const isValid = (schema: ZodType): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {

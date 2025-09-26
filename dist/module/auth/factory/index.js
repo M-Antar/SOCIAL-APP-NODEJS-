@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthFactoryService = void 0;
 const enum_1 = require("../../../utils/common/enum");
-const hash_1 = require("../../../utils/common/enum/hash");
-const OTP_1 = require("../../../utils/common/enum/OTP");
 const entity_1 = require("../entity");
+const hash_1 = require("../../../utils/common/hash");
+const OTP_1 = require("../../../utils/common/OTP");
 class AuthFactoryService {
     async register(registerDTO) {
         const user = new entity_1.User();

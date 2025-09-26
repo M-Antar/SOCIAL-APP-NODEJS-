@@ -13,8 +13,9 @@ async exist(
   projection?: ProjectionType<T>,
   options?: QueryOptions<T>
 ) {
-  return await this.model.findOne(filter, projection, options);
+  return await this.model.findOne(filter, projection, options)
 }
+
 
 async getOne(
   filter: RootFilterQuery<T>,

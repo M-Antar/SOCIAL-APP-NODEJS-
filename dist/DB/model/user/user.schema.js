@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userSchema = void 0;
 const mongoose_1 = require("mongoose");
 const enum_1 = require("../../../utils/common/enum");
-const email_1 = require("../../../utils/common/enum/email");
+const email_1 = require("../../../utils/common/email");
 exports.userSchema = new mongoose_1.Schema({
     firstName: { type: String, minLength: 3, maxLength: 20, required: true, trim: true },
     lastName: { type: String, minLength: 3, maxLength: 20, required: true, trim: true },
@@ -17,7 +17,6 @@ exports.userSchema = new mongoose_1.Schema({
             else
                 return true;
         },
-        lowercase: true,
         trim: true,
     },
     credentialUpdatedAt: Date,

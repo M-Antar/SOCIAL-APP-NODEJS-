@@ -1,8 +1,8 @@
 import { FilterQuery } from "mongoose";
 import { UserRepository } from "../../../DB/model/user/user.repository";
-import { BadRequestException, NotFoundException } from "../../../utils/common/enum/error";
 import { VerifyAccountDTO } from "../auth.DTO";
 import { IUser } from "../../../DB/model/user/user.interface";
+import { BadRequestException, NotFoundException } from "../../../utils/common/error";
 
 export const authProvider = {
     async checkOTP(verifyAccountDTO:VerifyAccountDTO){

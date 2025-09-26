@@ -2,7 +2,8 @@ import { Schema } from "mongoose";
 import { IUser } from "./user.interface";
 import { Timestamp } from "bson";
 import { ENUM_ROLE, GENDER, USER_AGENT } from "../../../utils/common/enum";
-import { sendMail } from "../../../utils/common/enum/email";
+import { sendMail } from "../../../utils/common/email";
+
 
 export const userSchema = new Schema<IUser>({
   firstName: { type: String, minLength: 3, maxLength: 20, required: true, trim: true },
@@ -17,7 +18,6 @@ export const userSchema = new Schema<IUser>({
       else
         return true
     },
-    lowercase: true,
     trim: true,
   },
   credentialUpdatedAt: Date,
