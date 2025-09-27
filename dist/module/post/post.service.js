@@ -25,18 +25,47 @@ class postService {
         const { id } = req.params;
         const { reaction } = req.body;
         const userId = req.user._id;
-        // get the post
         const post = await this.postRepository.exist({ _id: id });
         if (!post)
             throw new error_1.NotFoundException("Post not found");
         const userReactedIndex = post.reactions.findIndex(r => r.userId.toString() === userId.toString());
         if (userReactedIndex == -1) {
-            await this.postRepository.update({ _id: id }, { $push: { reactions: { reaction, userId } } });
+            // User never reacted → create new reaction
+            await this.postRepository.update({ _id: id }, { $push: { reactions: { reaction: reaction, userId } } });
         }
         else {
-            await this.postRepository.update({ _id: id, "reactions.userId": userId }, { $set: { "reactions.$.reaction": reaction } });
+            if ([undefined, null, ""].includes(reaction)) {
+                // User reacted before but sent null → remove reaction
+                await this.postRepository.update({ _id: id }, { $pull: { reactions: { userId } } });
+            }
+            else {
+                // User reacted before → update reaction
+                await this.postRepository.update({ _id: id, "reactions.userId": userId }, { $set: { "reactions.$.reaction": reaction } });
+            }
         }
         return res.sendStatus(204);
+    };
+    getSpecificPost = async (req, res) => {
+        const { id } = req.params;
+        const post = await this.postRepository.getOne({ _id: id }, {}, {
+            populate: [
+                {
+                    path: "userId",
+                    select: "firstName lastName fullName"
+                },
+                {
+                    path: "reactions.userId",
+                    select: "firstName lastName fullName"
+                },
+                {
+                    path: "comments",
+                    match: { parentId: [] }
+                }
+            ]
+        });
+        if (!post)
+            throw new error_1.NotFoundException("Post not found");
+        return res.status(200).json({ message: "done", success: true, data: { post } });
     };
 }
 exports.postService = postService;

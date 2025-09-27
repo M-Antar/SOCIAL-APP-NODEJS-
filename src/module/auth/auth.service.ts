@@ -62,16 +62,11 @@ login = async (req: Request, res: Response) => {
 
   const LoginDTO: LLoginDTO = req.body
 
-  const userExist = await this.userRepository.exist({ email: LoginDTO.email })
+  const userExist = await this.userRepository.exist({ email: LoginDTO.email , isVerified:true})
 
   if (!userExist) {
     throw new ForbiddentException("Invalid Credintials")
   }
-  
-  console.log("Entered password:", LoginDTO.password)
-  console.log("Hashed password from DB:", userExist.password)
-   console.log("Match:", await bcryptjs.compare(LoginDTO.password, userExist.password))
-
 const isMatch = await compareHash(LoginDTO.password, userExist.password);
 if (!isMatch) {
   throw new ForbiddentException("Invalid Credentials");

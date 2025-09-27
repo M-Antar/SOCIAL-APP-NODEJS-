@@ -1,29 +1,29 @@
-import mongoose, { Schema } from "mongoose";
-import { IPost, IReaction } from "./post.interface";
-import { REACTION } from "../../../utils/common/enum";
+import { Schema } from "mongoose";
+import { reactionSchema } from "../common/reaction.schema";
+import { IPost } from "./post.interface";
 
-const reactionSchema = new Schema<IReaction>({
-  reaction:{type:Number,enum:REACTION,default:REACTION.like},
-  userId:{
-    type: Schema.Types.ObjectId,
-    ref:"User",
-    required: true,
+export const postSchema = new Schema<IPost>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    content: {
+      type: String,
+      trim: true,
+    },
+    reactions: [reactionSchema],
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-},{timestamps:true})
+);
 
-export const postSchema = new Schema<IPost>({
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref:"User",
-    required: true,
-  },
-  content: {
-    type: String,
-    // required:function(){
-    //     if(this.attachments?.length) return false
-    //     return true
-    // },
-    trim: true,
-  },
-  reactions:[reactionSchema]
+postSchema.virtual("comments", {
+  localField: "_id",
+  foreignField: "postId",
+  ref: "Comment",
 });
