@@ -1,6 +1,7 @@
 import { Schema } from "mongoose";
 import { reactionSchema } from "../common/reaction.schema";
 import { IPost } from "./post.interface";
+import { Comment } from "../comment/comment.model";
 
 export const postSchema = new Schema<IPost>(
   {
@@ -26,4 +27,22 @@ postSchema.virtual("comments", {
   localField: "_id",
   foreignField: "postId",
   ref: "Comment",
+});
+
+postSchema.pre("deleteOne", async function (next) {
+  const filter = typeof this.getFilter === "function" ? this.getFilter() : {};
+
+  // if (!filter._id) return next();
+
+  // const firstLayer = await Comment.find({ postId: filter._id , parentId:null});
+  
+  // if(firstLayer.length>0){
+  //   for (const item of firstLayer) {
+  //     await Comment.deleteOne({_id:item.id})
+  //   }
+  // }
+
+  await Comment.deleteMany({postId:filter._id})
+
+  next();
 });

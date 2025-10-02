@@ -9,6 +9,8 @@ PostRouter.use("/:postId/comment",CommentRouter)
 PostRouter.post("/create",isAuth(),postService.create)
 PostRouter.patch("/:id",isAuth(),postService.AddReaction)
 PostRouter.get("/:id",postService.getSpecificPost)
+PostRouter.delete("/:id",postService.deletePost)
+
 
 
 

@@ -7,8 +7,8 @@ class CommentFactoryService {
         const newComment = new entity_1.Comment();
         newComment.content = createCommentDTO.content;
         newComment.userId = user._id;
-        newComment.postId = post._id;
-        newComment.parentId = comment ? [...comment.parentId, comment._id] : [];
+        newComment.postId = post._id || comment.postId; // reply from notifiction without send postId
+        newComment.parentId = comment?._id || null;
         newComment.reactions = [];
         return newComment;
     }

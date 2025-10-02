@@ -4,6 +4,7 @@ exports.postService = void 0;
 const factory_1 = require("./factory");
 const post_repository_1 = require("../../DB/model/post/post.repository");
 const error_1 = require("../../utils/common/error");
+const react_providor_1 = require("../../utils/common/providors/react.providor");
 //get data >> factory
 // factory >> prepare data post >> post entity >> repository
 // repository >> post entity >> DB
@@ -25,24 +26,7 @@ class postService {
         const { id } = req.params;
         const { reaction } = req.body;
         const userId = req.user._id;
-        const post = await this.postRepository.exist({ _id: id });
-        if (!post)
-            throw new error_1.NotFoundException("Post not found");
-        const userReactedIndex = post.reactions.findIndex(r => r.userId.toString() === userId.toString());
-        if (userReactedIndex == -1) {
-            // User never reacted → create new reaction
-            await this.postRepository.update({ _id: id }, { $push: { reactions: { reaction: reaction, userId } } });
-        }
-        else {
-            if ([undefined, null, ""].includes(reaction)) {
-                // User reacted before but sent null → remove reaction
-                await this.postRepository.update({ _id: id }, { $pull: { reactions: { userId } } });
-            }
-            else {
-                // User reacted before → update reaction
-                await this.postRepository.update({ _id: id, "reactions.userId": userId }, { $set: { "reactions.$.reaction": reaction } });
-            }
-        }
+        await (0, react_providor_1.addReactionProvider)(this.postRepository, id, userId, reaction);
         return res.sendStatus(204);
     };
     getSpecificPost = async (req, res) => {
@@ -59,13 +43,23 @@ class postService {
                 },
                 {
                     path: "comments",
-                    match: { parentId: [] }
+                    match: { parentId: null }
                 }
             ]
         });
         if (!post)
             throw new error_1.NotFoundException("Post not found");
         return res.status(200).json({ message: "done", success: true, data: { post } });
+    };
+    deletePost = async (req, res) => {
+        const { id } = req.params;
+        const postExist = await this.postRepository.exist({ _id: id });
+        if (postExist?.userId.toString() != req.user?._id)
+            throw new error_1.NotAuthorizedException("You are not athorized to delete this post");
+        if (!postExist)
+            throw new error_1.NotFoundException("Post not found");
+        await this.postRepository.delete({ _id: id });
+        res.status(200).json({ message: "Post Deleted Successfully" });
     };
 }
 exports.postService = postService;

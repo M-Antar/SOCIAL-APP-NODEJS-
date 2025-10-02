@@ -6,4 +6,16 @@ const CommentRouter = Router({mergeParams:true}) // to get all ids from first pa
 
 CommentRouter.post("{/:id}",isAuth(),commentService.addComment)    //{} for optinol id
 
+// (/post/postId/comment/commentId || /comment/commentId) -> for reply
+
+CommentRouter.get("/:id",isAuth(),commentService.getSpecifcComment)
+
+CommentRouter.delete("/:id",isAuth(),commentService.deleteComment)
+
+CommentRouter.patch("/:id",isAuth(),commentService.addReaction)
+
+
+
+
+
 export default CommentRouter

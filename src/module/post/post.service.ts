@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { CreatePostDTO } from "./post.DTO";
 import { PostFactoryService } from "./factory";
 import { postRepository } from "../../DB/model/post/post.repository";
-import { NotFoundException } from "../../utils/common/error";
+import { NotAuthorizedException, NotFoundException } from "../../utils/common/error";
 import { REACTION } from "../../utils/common/enum";
 import { success } from "zod";
+import { addReactionProvider } from "../../utils/common/providors/react.providor";
+import { CommentRepository } from "../../DB/model/comment/comment.repository";
 
 
 
@@ -36,41 +38,15 @@ export class postService{
 }
 
 public AddReaction = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { reaction } = req.body;
-    const userId = req.user!._id;
+  const { id } = req.params;
+  const { reaction } = req.body;
+  const userId = req.user!._id;
 
-    const post = await this.postRepository.exist({ _id: id });
-    if (!post) throw new NotFoundException("Post not found");
+  await addReactionProvider(this.postRepository, id as string, userId as unknown as string, reaction);
 
-    const userReactedIndex = post.reactions.findIndex(
-        r => r.userId.toString() === userId.toString()
-    );
-
-    if (userReactedIndex == -1) {
-        // User never reacted → create new reaction
-        await this.postRepository.update(
-            { _id: id },
-            { $push: { reactions: { reaction: reaction , userId } } }
-        );
-    } else {
-        if ([undefined, null, ""].includes(reaction)) {
-            // User reacted before but sent null → remove reaction
-            await this.postRepository.update(
-                { _id: id },
-                { $pull: { reactions: { userId } } }
-            );
-        } else {
-            // User reacted before → update reaction
-            await this.postRepository.update(
-                { _id: id, "reactions.userId": userId },
-                { $set: { "reactions.$.reaction": reaction } }
-            );
-        }
-    }
-
-    return res.sendStatus(204);
+  return res.sendStatus(204);
 };
+
 
 public getSpecificPost = async (req:Request,res:Response)=>{
     const {id} = req.params;
@@ -90,7 +66,7 @@ const post = await this.postRepository.getOne(
       },
       {
         path: "comments",
-        match:{parentId:[]}
+        match:{parentId:null}
       }
     ]
   }
@@ -103,6 +79,22 @@ const post = await this.postRepository.getOne(
 
 }
 
+public deletePost = async (req:Request,res:Response)=>{
+    const {id} = req.params;
+
+    const postExist = await this.postRepository.exist({_id:id})
+
+    if(postExist?.userId.toString()!=req.user?._id)
+        throw new NotAuthorizedException("You are not athorized to delete this post")
+
+    if(!postExist) throw new NotFoundException("Post not found");
+
+    await this.postRepository.delete({_id:id})
+
+     res.status(200).json({message:"Post Deleted Successfully"})
 
 }
-export default new postService()
+
+
+}
+export default new postService() 

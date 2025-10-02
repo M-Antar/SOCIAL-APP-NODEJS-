@@ -10,8 +10,7 @@ export const commentSchema = new Schema<IComment>({
   },
   postId: {
     type: Schema.Types.ObjectId,
-    ref: "Post",
-    required: true
+    ref: "Post"
   },
   parentId: [{
     type: Schema.Types.ObjectId,
@@ -19,4 +18,27 @@ export const commentSchema = new Schema<IComment>({
   }],
   content: { type: String },
   reactions: { type: [reactionSchema] }
-}, { timestamps: true })
+}, { timestamps: true ,toJSON:{virtuals:true},toObject:{virtuals:true}})
+
+commentSchema.virtual('replies',{
+  ref:"Comment",
+  localField:"_id",
+  foreignField:"parentId"
+})
+
+
+commentSchema.pre("deleteOne", { document: false, query: true }, async function (next) {
+  const filter = this.getFilter?.() || {};
+  const commentId = filter._id;
+
+  if (!commentId) return next();
+
+  const replies = await this.model.find({ parentId: commentId });
+
+  for (const reply of replies) {
+    await this.model.deleteOne({ _id: reply._id });
+  }
+
+  next();
+});
+

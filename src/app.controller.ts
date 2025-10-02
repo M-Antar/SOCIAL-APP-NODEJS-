@@ -3,6 +3,7 @@ import { AuthRouter,PostRouter,userRouter } from "./module";
 
 import { connectDB } from "./DB/connection";
 import { AppError } from "./utils/common/error";
+import CommentRouter from "./module/comment/comment.controller";
 
 
 
@@ -15,6 +16,7 @@ export function bootstrap(app:Express,express:any){
     app.use("/auth",AuthRouter)
     app.use("/user",userRouter)
     app.use("/post",PostRouter)
+    app.use("/comment",CommentRouter)
 
     
 

@@ -12,4 +12,5 @@ PostRouter.use("/:postId/comment", comment_controller_1.default);
 PostRouter.post("/create", (0, authintication_middlewear_1.isAuth)(), post_service_1.default.create);
 PostRouter.patch("/:id", (0, authintication_middlewear_1.isAuth)(), post_service_1.default.AddReaction);
 PostRouter.get("/:id", post_service_1.default.getSpecificPost);
+PostRouter.delete("/:id", post_service_1.default.deletePost);
 exports.default = PostRouter;
