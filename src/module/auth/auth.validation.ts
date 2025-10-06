@@ -16,3 +16,21 @@ export const loginSchema = z.object<LLoginDTO>({
     email:z.email() as unknown as string,
     password:z.string() as unknown as string,
 })
+
+export const updatePasswordSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+  newPassword: z.string().min(4),
+})
+
+export const updateBasicSchema = z.object({
+  fullName: z.string().min(2).max(50).optional(),
+  phoneNumber: z.string().optional(),
+  gender: z.nativeEnum(GENDER).optional(),
+})
+
+export const updateEmailSchema = z.object({
+  oldEmail: z.string().email(),
+  newEmail: z.string().email(),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+})

@@ -7,6 +7,8 @@ const auth_provider_1 = require("./provider/auth.provider");
 const hash_1 = require("../../utils/common/hash");
 const token_1 = require("../../utils/common/token");
 const error_1 = require("../../utils/common/error");
+const OTP_1 = require("../../utils/common/OTP");
+const email_1 = require("../../utils/common/email");
 class AuthService {
     userRepository = new user_repository_1.UserRepository();
     authFactoryService = new factory_1.AuthFactoryService();
@@ -52,6 +54,67 @@ class AuthService {
             success: true,
             data: { accessToken }
         });
+    };
+    updatePass = async (req, res) => {
+        const updatePassDTO = req.body;
+        const userExist = await this.userRepository.exist({ email: updatePassDTO.email });
+        if (!userExist)
+            throw new error_1.NotFoundException("No user with this email");
+        if (userExist.otp !== updatePassDTO.otp)
+            throw new error_1.BadRequestException("Invalid OTP");
+        if (userExist.otp && userExist.otpExpireAt < new Date())
+            throw new error_1.BadRequestException("OTP expired");
+        const hashedPass = await (0, hash_1.generateHash)(updatePassDTO.newPassword);
+        await this.userRepository.update({ email: updatePassDTO.email }, {
+            password: hashedPass,
+            $unset: { otp: 1, otpExpiryAt: 1 },
+        });
+        res.status(200).json({ message: "Password updated successfully" });
+    };
+    sendOtp = async (req, res) => {
+        const { email } = req.body;
+        const user = await this.userRepository.exist({ email });
+        if (!user)
+            throw new error_1.NotFoundException("No user with this email");
+        const otp = (0, OTP_1.generateOTP)();
+        const otpExpires = (0, OTP_1.generateExpireDate)(5 * 60 * 1000);
+        await this.userRepository.update({ email }, { otp, otpExpires });
+        await (0, email_1.sendMail)({
+            to: email,
+            subject: "Password Reset OTP",
+            html: `
+        <p>Your OTP is: <b>${otp}</b></p>
+        <p>This OTP will expire in 5 minutes.</p>
+    `,
+        });
+        return res.status(200).json({ message: "OTP sent successfully" });
+    };
+    updateBasic = async (req, res) => {
+        const updateUserDTO = req.body;
+        await this.userRepository.update({ email: req.user?.email }, {
+            fullName: updateUserDTO.fullName ?? req.user?.fullName,
+            phoneNumber: updateUserDTO.phoneNumber ?? req.user?.phoneNumber,
+            gender: updateUserDTO.gender ?? req.user?.gender,
+        });
+        return res.status(200).json({ message: "User info updated successfully" });
+    };
+    updateEmail = async (req, res) => {
+        const updateEmail = req.body;
+        const oldUserExist = await this.userRepository.exist({ email: updateEmail.oldEmail });
+        const newEmailOkay = await this.userRepository.exist({ email: updateEmail.newEmail });
+        if (!oldUserExist)
+            throw new error_1.NotFoundException("No user with this email");
+        if (newEmailOkay)
+            throw new error_1.BadRequestException("This email used before");
+        if (oldUserExist.otp !== updateEmail.otp)
+            throw new error_1.BadRequestException("Invalid OTP");
+        if (oldUserExist.otpExpireAt < new Date())
+            throw new error_1.BadRequestException("OTP expired");
+        await this.userRepository.update({ email: updateEmail.oldEmail }, {
+            email: updateEmail.newEmail,
+            $unset: { otp: 1, otpExpiryAt: 1 },
+        });
+        return res.status(200).json({ message: "Email updated successfully" });
     };
 }
 exports.AuthService = AuthService;
