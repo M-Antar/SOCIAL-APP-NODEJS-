@@ -12,4 +12,6 @@ CommentRouter.post("{/:id}", (0, authintication_middlewear_1.isAuth)(), comment_
 CommentRouter.get("/:id", (0, authintication_middlewear_1.isAuth)(), comment_service_1.default.getSpecifcComment);
 CommentRouter.delete("/:id", (0, authintication_middlewear_1.isAuth)(), comment_service_1.default.deleteComment);
 CommentRouter.patch("/:id", (0, authintication_middlewear_1.isAuth)(), comment_service_1.default.addReaction);
+CommentRouter.get("/:id/with-replies", (0, authintication_middlewear_1.isAuth)(), comment_service_1.default.getCommentWithReply);
+CommentRouter.patch("/:id/freeze", (0, authintication_middlewear_1.isAuth)(), comment_service_1.default.freezeComment);
 exports.default = CommentRouter;

@@ -15,6 +15,10 @@ exports.postSchema = new mongoose_1.Schema({
         trim: true,
     },
     reactions: [reaction_schema_1.reactionSchema],
+    isFrozen: {
+        type: Boolean,
+        default: false,
+    },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

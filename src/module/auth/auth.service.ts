@@ -13,6 +13,7 @@ import { GenerateToken } from "../../utils/common/token";
 import { BadRequestException, ConflictException, ForbiddentException, NotFoundException } from "../../utils/common/error";
 import { generateExpireDate, generateOTP } from "../../utils/common/OTP";
 import { sendMail } from "../../utils/common/email";
+import { GENDER } from "../../utils/common/enum";
 
 export class AuthService {
 private userRepository = new UserRepository()
@@ -143,17 +144,24 @@ sendOtp = async (req: Request, res: Response) => {
 updateBasic = async (req: Request, res: Response) => {
   const updateUserDTO: UpdateUserDTO = req.body
 
-  await this.userRepository.update(
-    { email: req.user?.email },
-    {
-      fullName: updateUserDTO.fullName ?? req.user?.fullName,
-      phoneNumber: updateUserDTO.phoneNumber ?? req.user?.phoneNumber,
-      gender: updateUserDTO.gender ?? req.user?.gender,
-    }
-  )
+  // 1. Fetch the user document
+  const user = await this.userRepository.exist({ email: req.user?.email })
+  if (!user) return res.status(404).json({ message: "User not found" })
 
-  return res.status(200).json({ message: "User info updated successfully" })
+  // 2. Update fields on the document instance
+  user.fullName = (updateUserDTO.fullName ?? user.fullName) as string
+  user.phoneNumber = (updateUserDTO.phoneNumber ?? user.phoneNumber) as string
+  user.gender = (updateUserDTO.gender ?? user.gender) as GENDER
+
+  // 3. Save the document (this triggers hooks & recomputes virtuals)
+  await user.save()
+
+  // 4. Return the updated document with virtual fields
+  return res.status(200).json({
+    message: "User info updated successfully",
+  })
 }
+
 
 updateEmail = async (req: Request, res: Response) => {
   const updateEmail :UpdateEmail = req.body;

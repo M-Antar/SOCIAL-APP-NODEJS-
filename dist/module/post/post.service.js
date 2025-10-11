@@ -61,6 +61,39 @@ class postService {
         await this.postRepository.delete({ _id: id });
         res.status(200).json({ message: "Post Deleted Successfully" });
     };
+    updatePost = async (req, res) => {
+        const { postId } = req.query;
+        const updatePostDTO = req.body.post;
+        const post = await this.postRepository.exist({ _id: postId });
+        if (!post)
+            throw new error_1.NotFoundException("Post not found");
+        if (post.userId.toString() !== req.user?._id.toString())
+            throw new error_1.NotAuthorizedException("You are not authorized to update this post");
+        post.content = (updatePostDTO.content ?? post.content);
+        post.isFrozen = (updatePostDTO.isFrozen ?? post.isFrozen);
+        post.attachments = (updatePostDTO.attachments ?? post.attachments);
+        await post.save();
+        return res.status(200).json({
+            message: "Post updated successfully",
+            success: true,
+            data: { post },
+        });
+    };
+    freezePost = async (req, res) => {
+        const { id } = req.params;
+        const post = await this.postRepository.exist({ _id: id });
+        if (!post)
+            throw new error_1.NotFoundException("Post not found");
+        if (post.userId.toString() !== req.user?._id.toString())
+            throw new error_1.NotAuthorizedException("You are not authorized to freeze this post");
+        post.isFrozen = !(post.isFrozen);
+        const updatedPost = await post.save();
+        return res.status(200).json({
+            message: `Post ${post.isFrozen ? "frozen" : "unfrozen"} successfully`,
+            success: true,
+            data: { updatedPost }
+        });
+    };
 }
 exports.postService = postService;
 exports.default = new postService();

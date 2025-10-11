@@ -9,4 +9,5 @@ export interface IComment {
   content: string
   attachment?: IAttachment
   reactions: IReaction[]
+  isFrozen:boolean
 }

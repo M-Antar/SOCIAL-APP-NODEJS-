@@ -52,7 +52,7 @@ class CommentService{
     
      const {id} = req.params;
      
-     const commentExist = await this.CommentRepository.exist({_id:id},{},{populate:[{path:"replies"}]})
+     const commentExist = await this.CommentRepository.exist({_id:id},{},{})
 
      if(!commentExist) throw new NotFoundException("Comment Not Found")
 
@@ -91,6 +91,68 @@ class CommentService{
   // send response
   return res.sendStatus(204);
 };
+
+    public getCommentWithReply = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const comment = await this.CommentRepository.exist(
+      { _id: id },
+      {},
+      {
+        populate: [
+          { path: "userId", select: "firstName lastName email" },
+          {
+            path: "replies",
+            populate: { path: "userId", select: "firstName lastName email" },
+          },
+        ],
+      }
+    ); 
+     if(!comment) throw new NotFoundException("Comment Not Found")
+    return res.status(201).json({success:true,data:{comment}})
+  }
+
+  public updateComment = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { content } = req.body
+
+  const comment = await this.CommentRepository.exist({ _id: id })
+
+  if (!comment) throw new NotFoundException("Comment not found")
+  if (comment.userId.toString() !== req.user?._id.toString())
+    throw new NotAuthorizedException("You are not authorized to update this comment")
+
+  comment.content = content ?? comment.content
+
+  const updatedComment = await comment.save()
+
+  return res.status(200).json({
+    message: "Comment updated successfully",
+    success: true,
+    data: { updatedComment }
+  })
+}
+
+public freezeComment = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const comment = await this.CommentRepository.exist({ _id: id })
+  if (!comment)   throw new NotFoundException("Comment not found")
+
+  if (comment.userId.toString() !== req.user?._id.toString())
+       throw new NotAuthorizedException("You are not authorized to freeze this comment")
+
+  comment.isFrozen = !comment.isFrozen
+  const updatedComment = await comment.save()
+
+  return res.status(200).json({
+        message: `Comment ${comment.isFrozen ? "frozen" : "unfrozen"} successfully`,
+    success: true,
+    data: { updatedComment }
+  })
+}
+
+
 
 }
 

@@ -14,6 +14,12 @@ CommentRouter.delete("/:id",isAuth(),commentService.deleteComment)
 
 CommentRouter.patch("/:id",isAuth(),commentService.addReaction)
 
+CommentRouter.get("/:id/with-replies", isAuth(), commentService.getCommentWithReply);
+
+CommentRouter.patch("/:id/freeze", isAuth(), commentService.freezeComment);
+
+
+
 
 
 

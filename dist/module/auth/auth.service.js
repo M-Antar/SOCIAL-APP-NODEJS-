@@ -91,12 +91,20 @@ class AuthService {
     };
     updateBasic = async (req, res) => {
         const updateUserDTO = req.body;
-        await this.userRepository.update({ email: req.user?.email }, {
-            fullName: updateUserDTO.fullName ?? req.user?.fullName,
-            phoneNumber: updateUserDTO.phoneNumber ?? req.user?.phoneNumber,
-            gender: updateUserDTO.gender ?? req.user?.gender,
+        // 1. Fetch the user document
+        const user = await this.userRepository.exist({ email: req.user?.email });
+        if (!user)
+            return res.status(404).json({ message: "User not found" });
+        // 2. Update fields on the document instance
+        user.fullName = (updateUserDTO.fullName ?? user.fullName);
+        user.phoneNumber = (updateUserDTO.phoneNumber ?? user.phoneNumber);
+        user.gender = (updateUserDTO.gender ?? user.gender);
+        // 3. Save the document (this triggers hooks & recomputes virtuals)
+        await user.save();
+        // 4. Return the updated document with virtual fields
+        return res.status(200).json({
+            message: "User info updated successfully",
         });
-        return res.status(200).json({ message: "User info updated successfully" });
     };
     updateEmail = async (req, res) => {
         const updateEmail = req.body;

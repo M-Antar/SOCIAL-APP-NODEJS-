@@ -17,4 +17,5 @@ export interface IPost {
   content: string;
   reactions: IReaction[];
   attachments?: IAttachment[];
+  isFrozen :boolean;
 }

@@ -95,6 +95,49 @@ public deletePost = async (req:Request,res:Response)=>{
 
 }
 
+public updatePost = async (req: Request, res: Response) => {
+  const { postId } = req.query
+  const updatePostDTO = req.body.post
+
+  const post = await this.postRepository.exist({ _id: postId })
+  if (!post) throw new NotFoundException("Post not found")
+
+  if (post.userId.toString() !== req.user?._id.toString())
+    throw new NotAuthorizedException("You are not authorized to update this post")
+
+  post.content = (updatePostDTO.content ?? post.content) as string
+  post.isFrozen = (updatePostDTO.isFrozen ?? post.isFrozen) as boolean
+  post.attachments = (updatePostDTO.attachments ?? post.attachments) as any
+
+  await post.save()
+
+  return res.status(200).json({
+    message: "Post updated successfully",
+    success: true,
+    data: { post },
+  })
+}
+
+public freezePost = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+   const post = await this.postRepository.exist({ _id: id })
+  if (!post) throw new NotFoundException("Post not found")
+
+  if (post.userId.toString() !== req.user?._id.toString())
+      throw new NotAuthorizedException("You are not authorized to freeze this post")
+
+  post.isFrozen = !(post.isFrozen)
+
+  const updatedPost = await post.save()
+
+  return res.status(200).json({
+     message: `Post ${post.isFrozen ? "frozen" : "unfrozen"} successfully`,
+    success: true,
+    data: { updatedPost }
+  })
+}
+
 
 }
 export default new postService() 
