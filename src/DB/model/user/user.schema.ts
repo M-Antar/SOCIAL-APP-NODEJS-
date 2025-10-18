@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 import { IUser } from "./user.interface";
-import { Timestamp } from "bson";
+import { ObjectId, Timestamp } from "bson";
 import { ENUM_ROLE, GENDER, USER_AGENT } from "../../../utils/common/enum";
 import { sendMail } from "../../../utils/common/email";
 
@@ -27,7 +27,8 @@ export const userSchema = new Schema<IUser>({
   userAgent: { type: String, enum: USER_AGENT, default: USER_AGENT.local },
   otp:{type:String},
   otpExpireAt:{type:Date},
-  isVerified:{type:Boolean,default:false}
+  isVerified:{type:Boolean,default:false},
+  friends:[ { type: Schema.Types.ObjectId, ref: "User" }],
 }, { timestamps: true ,toJSON:{virtuals:true} ,toObject:{virtuals:true }})
 
 userSchema.virtual("fullName").get(function (){

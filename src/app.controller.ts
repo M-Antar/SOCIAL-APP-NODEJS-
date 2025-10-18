@@ -5,6 +5,9 @@ import { connectDB } from "./DB/connection";
 import { AppError } from "./utils/common/error";
 import CommentRouter from "./module/comment/comment.controller";
 
+import  cors from "cors"
+import chatRouter from "./module/chat/chat.controller";
+
 
 
 
@@ -12,11 +15,15 @@ import CommentRouter from "./module/comment/comment.controller";
 
 export function bootstrap(app:Express,express:any){
     app.use(express.json())
+    app.use(cors({origin:"*"}))
 
     app.use("/auth",AuthRouter)
     app.use("/user",userRouter)
     app.use("/post",PostRouter)
     app.use("/comment",CommentRouter)
+    app.use("/chat",chatRouter)
+
+
 
     
 

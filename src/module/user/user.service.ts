@@ -8,7 +8,8 @@ export class UserService {
   constructor() {}
 
   getProfile = async (req: Request, res: Response, next: NextFunction) => {
-    let user = await this.userRepository.getOne({ _id: req.params.id });
+    console.log(req.user?._id)
+    let user = await this.userRepository.getOne({ _id: req.user?._id });
     return res
       .status(200)
       .json({ message: "done", success: true, data: { user } });

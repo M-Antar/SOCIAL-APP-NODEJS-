@@ -7,12 +7,16 @@ exports.bootstrap = bootstrap;
 const module_1 = require("./module");
 const connection_1 = require("./DB/connection");
 const comment_controller_1 = __importDefault(require("./module/comment/comment.controller"));
+const cors_1 = __importDefault(require("cors"));
+const chat_controller_1 = __importDefault(require("./module/chat/chat.controller"));
 function bootstrap(app, express) {
     app.use(express.json());
+    app.use((0, cors_1.default)({ origin: "*" }));
     app.use("/auth", module_1.AuthRouter);
     app.use("/user", module_1.userRouter);
     app.use("/post", module_1.PostRouter);
     app.use("/comment", comment_controller_1.default);
+    app.use("/chat", chat_controller_1.default);
     app.all("/{*dummy}", (req, res, next) => {
         return res.status(404).json({ message: "invalid router", success: false });
     });

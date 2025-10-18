@@ -15,5 +15,6 @@ export interface IUser {
   userAgent: USER_AGENT;
   otp?:string;
   otpExpireAt:Date;
-  isVerified:boolean
+  isVerified:boolean;
+  friends:ObjectId[];
 }
